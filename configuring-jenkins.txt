@@ -1,0 +1,51 @@
+I've opted to use Jenkins in a separated container (not in local machine)
+
+1) follow all the instructions from https://jenkins.io/doc/book/installing/#debian-ubuntu
+
+2) after the container running, it will be necessary to get the initial password from container
+PS: alpine from Jenkins container has no text editors by default
+
+$ docker container exec -it container-name --user root /bin/bash
+$ apk update
+$ apk add nano
+$ nano /var/jenkins_home/secrets/initialAdminPassword
+
+get the password then put in the Jenkins installation window, then configure the Java for Jenkins
+
+$ printenv | grep 'JAVA_HOME'
+
+get the path and put in Jenkins configuration
+
+git already comes installed, so set git with /usr/bin/git
+
+then install maven and set the path with /usr/bin/mvn
+
+---- extra configurations in tomcat ----
+
+maybe it will be necessary to set tomcat manager ui accessible from any machine
+(by default only local machine have the rights to do it)
+
+so add the following snippet in webapps/manager/META-INF/context.xml file:
+
+<Context privileged="true" antiResourceLocking="false" 
+         docBase="${catalina.home}/webapps/manager">
+    <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="^.*$" />
+</Context>
+
+
+
+----------------------------
+
+Chained builds:
+
+- is possible to execute other after a fisrt one
+- is possible to listen an execution from an expecific job, then build after it
+
+
+----------------------------
+
+configuring Sonar environments
+
+in local machine:
+
+$ sudo sysctl -w vm.max_map_count=262144
